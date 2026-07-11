@@ -129,7 +129,6 @@ const result = () => {
   let accuracy = Math.round(((inputArr.length - errs) / inputArr.length) * 100);
   let consistency = Math.round(netWordsPerMinute / wordsPerMinute) * 100;
   document.querySelector(".consistency").innerHTML = `${consistency}%`;
-  console.log(consistency);
   wpmValue.forEach((element) => {
     element.innerText = `${wordsPerMinute}`;
   });
@@ -177,7 +176,6 @@ inputText.addEventListener("input", () => {
 restartBtn.addEventListener("click", () => {
   clearInterval(timer);
   setTimer.style.display = "none";
-  document.getElementById("timer").textContent = "00 : 00";
 
   inputText.value = "";
   startTyping();
@@ -331,6 +329,5 @@ window.addEventListener("click", (event) => {
     startTyping();
     clearInterval(timer);
     setTimer.style.display = "none";
-    document.getElementById("timer").textContent = "00 : 00";
   }
 });

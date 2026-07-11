@@ -203,7 +203,7 @@ body {
   position: absolute;
   top: -12px;
   left: clamp(38px, 2.5vw, 60px);
-  z-index: 3;
+  z-index: -1;
   display: none;
   color: #e2b714;
   font-size: calc(1.3rem + 0.6vw);
