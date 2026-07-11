@@ -5,23 +5,28 @@
 }
 
 @media only screen and (max-width: 1260px) {
+  :root {
+    --content-width: 85vw;
+    --topbar-icon-size: 1rem;
+    --topbar-icon-pad: 7px;
+  }
   .test-settings {
     display: none;
   }
-  .nav-bar,
   .footer-content {
     max-width: 85vw;
   }
   .menu-bar {
     max-width: 74vw;
   }
-  .typing-test {
-    max-width: 80vw;
-  }
 }
 
 @media only screen and (max-width: 1100px) {
-  .nav-bar,
+  :root {
+    --content-width: 95vw;
+    --topbar-icon-size: 0.95rem;
+    --topbar-icon-pad: 6px;
+  }
   .footer-content {
     max-width: 95vw;
   }
@@ -64,6 +69,14 @@
 }
 
 @media only screen and (max-width: 920px) {
+  :root {
+    --content-width: 90vw;
+    --topbar-icon-size: 0.95rem;
+    --topbar-icon-pad: 6px;
+  }
+  .typing-timer {
+    left: clamp(26px, 3vw, 30px);
+  }
   .menu-bar {
     width: 85vw;
   }
@@ -72,16 +85,11 @@
   }
   .nav-icon i,
   .user-log-in i {
-    font-size: 1rem;
-    padding: 7px;
     margin: 0;
   }
   .menu-list a {
     padding: 0 6px;
     font-size: 0.6rem;
-  }
-  .typing-test {
-    width: 85vw;
   }
   .typing-test #mention-text,
   #input-text {
@@ -128,6 +136,14 @@
 }
 
 @media only screen and (max-width: 730px) {
+  :root {
+    --content-width: 97vw;
+    --topbar-icon-size: 0.9rem;
+    --topbar-icon-pad: 6px;
+  }
+  .typing-timer {
+    left: clamp(20px, 3vw, 30px);
+  }
   .nav-bar {
     padding: 0 25px 0 15px;
   }
@@ -153,9 +169,6 @@
   .test-settings a {
     font-size: 0.7rem;
     letter-spacing: 1px;
-  }
-  .typing-test {
-    width: 97vw;
   }
   .typing-test #mention-text,
   #input-text {
@@ -202,10 +215,17 @@
 }
 
 @media only screen and (max-width: 581px) {
+  :root {
+    --content-width: 97vw;
+    --topbar-icon-size: 0.8rem;
+    --topbar-icon-pad: 5px;
+  }
+  .typing-timer {
+    left: 16px;
+  }
   .nav-icon i,
   .user-log-in i {
-    font-size: 0.7rem;
-    padding: 5px;
+    margin: 0;
   }
   .support-content {
     height: 460px;

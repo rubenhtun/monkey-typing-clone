@@ -27,11 +27,41 @@ const paragraphs = [
   "So twice five miles of fertile ground With walls and towers were girdled round: And there were gardens bright with sinuous rills, Where blossomed many an incense-bearing tree; And here were ancient forests.",
 ];
 
+// Fixed text used for "custom" mode
+const customText = "The quick brown fox jumps over the lazy dog.";
+
 let paragraphArr = []; // Creating a paragraph array;
 let inputArr = [];
 let errs = 0;
 let timerStarted = false;
-let activeTab;
+let activeTab; // last highlighted tab (visual state)
+let activeDurationTab; // the selected time duration (15/30/60/120), only used in "time" mode
+
+// NEW: current test mode + word tracking
+let currentMode = "time"; // one of: time | words | quote | zen | custom
+let totalWords = 0; // total words in the current paragraph / custom text
+const modeIds = ["time", "words", "quote", "zen", "custom"];
+
+// Counts words in a string (ignores extra whitespace)
+const getWordCount = (str) =>
+  str.trim().length === 0 ? 0 : str.trim().split(/\s+/).length;
+
+// NEW: updates the #timer element for non-"time" modes
+// - zen: shows a dynamic, ever-increasing word count
+// - words / quote / custom: shows "typed/total" word progress
+const updateCounterDisplay = (typedWords) => {
+  if (currentMode === "zen") {
+    setTimer.textContent = `${typedWords}`;
+    setTimer.style.display = "block";
+  } else if (
+    currentMode === "words" ||
+    currentMode === "quote" ||
+    currentMode === "custom"
+  ) {
+    setTimer.textContent = `${typedWords}/${totalWords}`;
+    setTimer.style.display = "block";
+  }
+};
 
 const checkInput = () => {
   mentionText.innerHTML = "";
@@ -68,10 +98,17 @@ inputText.addEventListener("input", () => {
 
 // Defining a function related to refresh paragraphs;
 const startTyping = () => {
-  const getParagraph =
-    paragraphs[Math.floor(Math.random() * paragraphs.length)]; // Get a random paragraph;
+  let getParagraph;
+
+  if (currentMode === "custom") {
+    getParagraph = customText;
+  } else {
+    getParagraph = paragraphs[Math.floor(Math.random() * paragraphs.length)]; // Get a random paragraph;
+  }
+
   paragraphArr = getParagraph.split("");
   mentionText.textContent = getParagraph;
+  totalWords = getWordCount(getParagraph); // NEW: track total words for words/quote/custom counter
 
   mentionText.classList.add("fade-out-in"); // Fade Out In animation;
   mentionText.addEventListener("animationend", () => {
@@ -79,12 +116,14 @@ const startTyping = () => {
   });
   errs = null;
   timerStarted = false;
+
+  updateCounterDisplay(0); // NEW: reset counter for the new text
 };
 
 startTyping(); // Initial display a paragraph;
 const result = () => {
   typingResult.style.display = "flex";
-  let timeTaken = activeTab.innerHTML.trim() / 60;
+  let timeTaken = activeDurationTab.innerHTML.trim() / 60;
   let wordsPerMinute = Math.round((inputArr.length - errs) / 5 / timeTaken);
   let netWordsPerMinute = Math.round(inputArr.length / 5 / timeTaken);
   let accuracy = Math.round(((inputArr.length - errs) / inputArr.length) * 100);
@@ -97,7 +136,7 @@ const result = () => {
   accPercent.innerText = `${accuracy}%`;
   const timeShow = document.querySelectorAll(".time");
   timeShow.forEach((element) => {
-    element.innerHTML = `${activeTab.innerHTML.trim()}s`;
+    element.innerHTML = `${activeDurationTab.innerHTML.trim()}s`;
   });
 };
 
@@ -107,20 +146,27 @@ inputText.addEventListener("input", () => {
   checkInput();
   inputArr = inputText.value.split("");
 
-  if (inputText.value.length > 0 && !timerStarted) {
-    timerStarted = true;
-    setTimer.style.display = "block";
-    const timeAmount = activeTab.innerHTML.trim();
+  if (currentMode === "time") {
+    // Original countdown-timer behaviour, only for "time" mode
+    if (inputText.value.length > 0 && !timerStarted) {
+      timerStarted = true;
+      setTimer.style.display = "block";
+      const timeAmount = activeDurationTab.innerHTML.trim();
 
-    if (timeAmount === "15") {
-      startTimer(0, 15, result);
-    } else if (timeAmount === "30") {
-      startTimer(0, 30, result);
-    } else if (timeAmount === "60") {
-      startTimer(1, 0, result);
-    } else if (timeAmount === "120") {
-      startTimer(2, 0, result);
+      if (timeAmount === "15") {
+        startTimer(0, 15, result);
+      } else if (timeAmount === "30") {
+        startTimer(0, 30, result);
+      } else if (timeAmount === "60") {
+        startTimer(1, 0, result);
+      } else if (timeAmount === "120") {
+        startTimer(2, 0, result);
+      }
     }
+  } else {
+    // NEW: zen / words / quote / custom -> dynamic word counter instead of a timer
+    const typedWords = getWordCount(inputText.value);
+    updateCounterDisplay(typedWords);
   }
 
   character += 1;
@@ -183,12 +229,14 @@ window.onload = () => {
   alreadySelected(timeTab);
   alreadySelected(secondTab);
   activeTab = secondTab;
+  activeDurationTab = secondTab; // NEW: default duration for "time" mode
+  currentMode = "time"; // NEW: default mode
 };
 
 const tablinks = document.getElementsByClassName("tablink");
 
 const selectedTab = (event) => {
-  clickedTab = event.target;
+  clickedTab = event.currentTarget;
   clickedTab.style.color = "#e2b714";
 
   if (activeTab && activeTab !== clickedTab) {
@@ -203,10 +251,25 @@ for (let i = 0; i < tablinks.length; i++) {
     clearInterval(timer);
     document.getElementById("timer").textContent = "00 : 00";
 
+    const clickedTabEl = event.currentTarget;
+    const clickedText = clickedTabEl.textContent.trim();
+
+    // NEW: figure out whether a mode tab or a duration tab was clicked
+    if (modeIds.includes(clickedTabEl.id)) {
+      currentMode = clickedTabEl.id;
+    } else if (/^\d+$/.test(clickedText)) {
+      activeDurationTab = clickedTabEl;
+    }
+
     selectedTab(event);
     inputText.value = "";
     startTyping();
-    setTimer.style.display = "none";
+
+    // Only hide the counter/timer by default in "time" mode;
+    // zen/words/quote/custom show their counter right away via startTyping -> updateCounterDisplay
+    if (currentMode === "time") {
+      setTimer.style.display = "none";
+    }
   });
 }
 
@@ -233,9 +296,8 @@ const startTimer = (min, sec, result) => {
 
     let minuteValue = min < 10 ? "0" + min : min;
     let secondValue = sec < 10 ? "0" + sec : sec;
-    document.getElementById(
-      "timer"
-    ).textContent = `${minuteValue} : ${secondValue}`;
+    document.getElementById("timer").textContent =
+      `${minuteValue} : ${secondValue}`;
   }, 1000);
 };
 

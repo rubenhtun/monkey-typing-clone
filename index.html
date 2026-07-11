@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -126,16 +126,16 @@
           <a href="#" class="tablink" id="time"
             ><i class="fa-solid fa-clock"></i>&nbsp;&nbsp;time</a
           >
-          <a href="#" class="tablink"
+          <a href="#" class="tablink" id="words"
             ><i class="fa-solid fa-a"></i>&nbsp;&nbsp;words</a
           >
-          <a href="#" class="tablink"
+          <a href="#" class="tablink" id="quote"
             ><i class="fa-solid fa-quote-left"></i>&nbsp;&nbsp;quote</a
           >
-          <a href="#" class="tablink"
+          <a href="#" class="tablink" id="zen"
             ><i class="fas fa-yin-yang"></i>&nbsp;&nbsp;zen</a
           >
-          <a href="#" class="tablink"
+          <a href="#" class="tablink" id="custom"
             ><i class="fa-solid fa-wrench"></i>&nbsp;&nbsp;custom</a
           >
         </div>
@@ -160,18 +160,6 @@
           ></a>
         </div>
       </div>
-      <h3
-        id="timer"
-        style="
-          position: absolute;
-          top: 170px;
-          left: 50px;
-          color: #e2b714;
-          display: none;
-        "
-      >
-        00 : 00
-      </h3>
     </div>
 
     <div class="trunk">
@@ -183,6 +171,7 @@
 
       <!-- Typing Text -->
       <div class="container-fluid typing-test">
+        <h3 id="timer" class="typing-timer">00 : 00</h3>
         <div type="text" id="mention-text"></div>
         <textarea placeholder="" id="input-text"></textarea>
       </div>
